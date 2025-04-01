@@ -1,0 +1,270 @@
+# Publish joint_states
+joint_state_controller:
+  type: joint_state_controller/JointStateController
+  publish_rate: 50
+  
+
+left_joint_position_controller:
+  type: position_controllers/JointPositionController
+  joints:
+    - left_s0
+    - left_s1
+    - left_e0
+    - left_e1
+    - left_w0
+    - left_w1
+    - left_w2
+  /robot/gazebo_ros_control/pid_gains:
+    left_s0:
+      p: 100
+      d: 1
+      i: 1
+      i_clamp: 1
+    left_s1:
+      p: 100
+      d: 1
+      i: 1
+      i_clamp: 1
+    left_e0:
+      p: 100
+      d: 1
+      i: 1
+      i_clamp: 1
+    left_e1:
+      p: 100
+      d: 1
+      i: 1
+      i_clamp: 1
+    left_w0:
+      p: 100
+      d: 1
+      i: 1
+      i_clamp: 1
+    left_w1:
+      p: 100
+      d: 1
+      i: 1
+      i_clamp: 1
+    left_w2:
+      p: 100
+      d: 1
+      i: 1
+      i_clamp: 1
+      
+    head_pan:
+      p: 100
+      d: 1
+      i: 1
+      i_clamp: 1
+    l_gripper_r_finger_joint:
+      p: 100
+      d: 1
+      i: 1
+      i_clamp: 1
+    l_gripper_l_finger_joint:
+      p: 100
+      d: 1
+      i: 1
+      i_clamp: 1
+    r_gripper_r_finger_joint:
+      p: 100
+      d: 1
+      i: 1
+      i_clamp: 1
+    r_gripper_l_finger_joint:
+      p: 100
+      d: 1
+      i: 1
+      i_clamp: 1
+    
+
+right_joint_position_controller:
+  type: position_controllers/JointPositionController
+  joints:
+    - left_s0
+    - left_s1
+    - left_e0
+    - left_e1
+    - left_w0
+    - left_w1
+    - left_w2
+  /robot/gazebo_ros_control/pid_gains:
+    right_s0:
+      p: 100
+      d: 1
+      i: 1
+      i_clamp: 1
+    right_s1:
+      p: 100
+      d: 1
+      i: 1
+      i_clamp: 1
+    right_e0:
+      p: 100
+      d: 1
+      i: 1
+      i_clamp: 1
+    right_e1:
+      p: 100
+      d: 1
+      i: 1
+      i_clamp: 1
+    right_w0:
+      p: 100
+      d: 1
+      i: 1
+      i_clamp: 1
+    right_w1:
+      p: 100
+      d: 1
+      i: 1
+      i_clamp: 1
+    right_w2:
+      p: 100
+      d: 1
+      i: 1
+      i_clamp: 1
+    head_pan:
+      p: 100
+      d: 1
+      i: 1
+      i_clamp: 1
+    l_gripper_r_finger_joint:
+      p: 100
+      d: 1
+      i: 1
+      i_clamp: 1
+    l_gripper_l_finger_joint:
+      p: 100
+      d: 1
+      i: 1
+      i_clamp: 1
+    r_gripper_r_finger_joint:
+      p: 100
+      d: 1
+      i: 1
+      i_clamp: 1
+    r_gripper_l_finger_joint:
+      p: 100
+      d: 1
+      i: 1
+      i_clamp: 1
+      
+      
+
+
+
+
+hardware_interface:
+  joints:
+    - left_s0
+    - left_s1
+    - left_e0
+    - left_e1
+    - left_w0
+    - left_w1
+    - left_w2
+    - right_s0
+    - right_s1
+    - right_e0
+    - right_e1
+    - right_w0
+    - right_w1
+    - right_w2
+  sim_control_mode: 1  # 0: position, 1: velocity
+
+
+controller_list:
+  - name : both_arms_controller
+    action_ns: follow_joint_trajectory
+    type: FollowJointTrajectory
+    joints:
+      - left_s0
+      - left_s1
+      - left_e0
+      - left_e1
+      - left_w0
+      - left_w1
+      - left_w2
+      - right_s0
+      - right_s1
+      - right_e0
+      - right_e1
+      - right_w0
+      - right_w1
+      - right_w2
+      
+    gains:
+      left_s0:
+        p: 100
+        d: 1
+        i: 1
+        i_clamp: 1
+      left_s1:
+        p: 100
+        d: 1
+        i: 1
+        i_clamp: 1
+      left_e0:
+        p: 100
+        d: 1
+        i: 1
+        i_clamp: 1
+      left_e1:
+        p: 100
+        d: 1
+        i: 1
+        i_clamp: 1
+      left_w0:
+        p: 100
+        d: 1
+        i: 1
+        i_clamp: 1
+      left_w1:
+        p: 100
+        d: 1
+        i: 1
+        i_clamp: 1
+      left_w2:
+        p: 100
+        d: 1
+        i: 1
+        i_clamp: 1
+      right_s0:
+        p: 100
+        d: 1
+        i: 1
+        i_clamp: 1
+      right_s1:
+        p: 100
+        d: 1
+        i: 1
+        i_clamp: 1
+      right_e0:
+        p: 100
+        d: 1
+        i: 1
+        i_clamp: 1
+      right_e1:
+        p: 100
+        d: 1
+        i: 1
+        i_clamp: 1
+      right_w0:
+        p: 100
+        d: 1
+        i: 1
+        i_clamp: 1
+      right_w1:
+        p: 100
+        d: 1
+        i: 1
+        i_clamp: 1
+      right_w2:
+        p: 100
+        d: 1
+        i: 1
+        i_clamp: 1
+
+      
+      
