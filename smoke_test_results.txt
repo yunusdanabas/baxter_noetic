@@ -1,0 +1,135 @@
+(ros_env) [baxter - http://011412P0024.local:11311] yunusdanabas@yunusdanabas:~/catkin_ws$ rosrun baxter_tools smoke_test.py 
+Press <Enter> to Begin Smoke Test
+
+Performing All Tests
+Initializing node 'rsdk_smoke_test'
+
+Test: Enable - Zero G for 10 Seconds
+[INFO] [1744922936.503229]: Robot Enabled
+Test: State
+ready: True
+enabled: True
+stopped: False
+error: False
+estop_button: 0
+estop_source: 0
+Test: Disable
+[INFO] [1744922946.623826]: Robot Disabled
+Results of Enable saved to file: 011412P0024-4.17.2025-rsdk-1.2.0.57.smoketest
+------- Result: Success -------
+
+
+Test: Subscribe to topic: /robot/joint_states
+Test: Subscribe to topic: /robot/analog_io_states
+Results of Messages saved to file: 011412P0024-4.17.2025-rsdk-1.2.0.57.smoketest
+------- Result: Success -------
+
+
+Test: Service availability: /ExternalTools/left/PositionKinematicsNode/IKService
+Test: IK service call Solve IK
+Results of Services saved to file: 011412P0024-4.17.2025-rsdk-1.2.0.57.smoketest
+------- Result: Success -------
+
+
+Enabling robot...
+[INFO] [1744922947.657665]: Robot Enabled
+Test: Moving Head to Neutral Location
+Test: Pan Head
+Test: Nod Head
+Test: Display Image on Screen - 5 seconds
+libpng warning: iCCP: known incorrect sRGB profile
+Disabling robot...
+[INFO] [1744922964.400818]: Robot Disabled
+Results of Head saved to file: 011412P0024-4.17.2025-rsdk-1.2.0.57.smoketest
+------- Result: Success -------
+
+
+Enabling robot...
+[INFO] [1744922964.526779]: Robot Enabled
+Test: Create Limb Instances
+Test: Moving to Joint Positions: 
+0.00, -0.55, 0.00, 0.75, 0.00, 1.26, 0.00
+Test: Moving to Joint Positions: 
+0.50, -0.80, 2.80, 0.15, 0.00, 1.90, 2.80
+Test: Moving to Joint Positions: 
+-0.10, -0.80, -1.00, 2.50, 0.00, -1.40, -2.80
+Test: Moving to Joint Positions: 
+0.00, -0.55, 0.00, 0.75, 0.00, 1.26, 0.00
+Disabling robot...
+[INFO] [1744922997.065115]: Robot Disabled
+Results of MoveArms saved to file: 011412P0024-4.17.2025-rsdk-1.2.0.57.smoketest
+------- Result: Success -------
+
+
+Enabling robot, Moving to Neutral Location...
+[INFO] [1744923002.188611]: Robot Enabled
+Test: Verify Left Gripper Type
+Test: Reboot Left Gripper
+Test: Calibrating Left Gripper
+Test: Close Left Gripper
+[WARN] [1744923016.936549]: Unable to command left_gripper position until calibrated
+Test: Open Left Gripper
+[WARN] [1744923016.997233]: Unable to command left_gripper position until calibrated
+Test: Close Left Gripper
+[WARN] [1744923017.056933]: Unable to command left_gripper position until calibrated
+Test: Open Left Gripper
+[WARN] [1744923017.118364]: Unable to command left_gripper position until calibrated
+Test: Left Gripper Position Moves
+[WARN] [1744923017.177894]: Unable to command left_gripper position until calibrated
+[WARN] [1744923017.240189]: Unable to command left_gripper position until calibrated
+[WARN] [1744923017.302059]: Unable to command left_gripper position until calibrated
+[WARN] [1744923017.363226]: Unable to command left_gripper position until calibrated
+Test: Left Gripper Velocity Moves
+[WARN] [1744923017.425322]: Unable to command left_gripper position until calibrated
+[WARN] [1744923017.484989]: Unable to command left_gripper position until calibrated
+[WARN] [1744923017.544144]: Unable to command left_gripper position until calibrated
+[WARN] [1744923017.606985]: Unable to command left_gripper position until calibrated
+[WARN] [1744923017.670971]: Unable to command left_gripper position until calibrated
+[WARN] [1744923017.728816]: Unable to command left_gripper position until calibrated
+Test: Verify Right Gripper Type
+Test: Reboot Right Gripper
+Test: Calibrating Right Gripper
+Test: Close Right Gripper
+Test: Open Right Gripper
+Test: Close Right Gripper
+Test: Open Right Gripper
+Test: Right Gripper Position Moves
+Test: Right Gripper Velocity Moves
+Disabling robot...
+[INFO] [1744923035.614044]: Robot Disabled
+Results of Grippers saved to file: 011412P0024-4.17.2025-rsdk-1.2.0.57.smoketest
+------- Result: Success -------
+
+
+Test: Blink left_outer_light
+Test: Blink left_inner_light
+Test: Blink torso_left_outer_light
+Test: Blink torso_left_inner_light
+Test: Blink right_outer_light
+Test: Blink right_inner_light
+Test: Blink torso_right_outer_light
+Test: Blink torso_right_inner_light
+Results of BlinkLEDs saved to file: 011412P0024-4.17.2025-rsdk-1.2.0.57.smoketest
+------- Result: Success -------
+
+
+Enabling robot...
+[INFO] [1744923048.889844]: Robot Enabled
+Test: Verify Left_Hand, Right_Hand, and Head Cameras Present
+Test: Opening left_hand_camera
+Test: Display left_hand_camera to Screen - 10 Seconds
+Test: Opening right_hand_camera
+Test: Display right_hand_camera to Screen - 10 Seconds
+Test: Opening head_camera
+Test: Display head_camera to Screen - 10 Seconds
+Restarting the Default Cameras...
+Restarting left_hand_camera
+Restarting right_hand_camera
+Restarting head_camera
+Disabling robot...
+[INFO] [1744923155.226946]: Robot Disabled
+Results of Cameras saved to file: 011412P0024-4.17.2025-rsdk-1.2.0.57.smoketest
+------- Result: Success -------
+
+
+(ros_env) [baxter - http://011412P0024.local:11311] yunusdanabas@yunusdanabas:~/catkin_ws$ 

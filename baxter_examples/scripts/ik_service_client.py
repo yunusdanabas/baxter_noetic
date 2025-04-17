@@ -93,6 +93,11 @@ def ik_test(limb):
     }
 
     ikreq.pose_stamp.append(poses[limb])
+    print("Requesting IK solution for Limb %s" % (limb,))
+    print("IK Pose:\n", poses[limb])   
+    print("------------------")
+    print(ikreq)     
+    print("------------------")
     try:
         rospy.wait_for_service(ns, 5.0)
         resp = iksvc(ikreq)
@@ -102,8 +107,16 @@ def ik_test(limb):
 
     # Check if result valid, and type of seed ultimately used to get solution
     # convert rospy's string representation of uint8[]'s to int's
+    print("Response Type: ", resp.result_type)
+    print("Response Type Length: ", len(resp.result_type))
+    print("Response: " , resp)
+    print("------------------")
+
     resp_seeds = struct.unpack('<%dB' % len(resp.result_type),
                                resp.result_type)
+    
+    print("Response Seeds: ", resp_seeds)
+
     if (resp_seeds[0] != resp.RESULT_INVALID):
         seed_str = {
                     ikreq.SEED_USER: 'User Provided Seed',
@@ -118,6 +131,7 @@ def ik_test(limb):
         print("------------------")
         print("Response Message:\n", resp)
     else:
+        print(resp_seeds)
         print("INVALID POSE - No Valid Joint Solution Found.")
 
     return 0

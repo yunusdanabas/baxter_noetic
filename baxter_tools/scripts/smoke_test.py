@@ -87,7 +87,7 @@ def get_version():
     Get current software version number from param server.
     """
     try:
-        version = rospy.get_param('/rethink/software_version').rsplit('.', 1)[0]
+        version = rospy.get_param('/rethink/software_version')
     except socket.error:
         print("Exiting: Could not communicate with ROS Master to determine " +
               "Software version")
@@ -126,7 +126,7 @@ def main():
                       'Grippers', 'BlinkLEDs', 'Cameras'],
             '1.1.1': ['Enable', 'Messages', 'Services', 'Head', 'MoveArms',
                       'Grippers', 'BlinkLEDs', 'Cameras'],
-            '1.2.0': ['Enable', 'Messages', 'Services', 'Head', 'MoveArms',
+            '1.2.0.57': ['Enable', 'Messages', 'Services', 'Head', 'MoveArms',
                       'Grippers', 'BlinkLEDs', 'Cameras'],
             }
         }
@@ -138,7 +138,7 @@ def main():
         return 1
 
     try:
-        raw_input("Press <Enter> to Begin Smoke Test\n")
+        input("Press <Enter> to Begin Smoke Test\n")
     except Exception:
         print("\nExiting.")
         return 1
