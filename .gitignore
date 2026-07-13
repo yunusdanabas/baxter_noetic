@@ -1,0 +1,21 @@
+# LLM / agent workflow (local only)
+.cursor/
+conductor/
+*.plan.md
+
+# Editor / OS
+.vscode/
+.idea/
+*.swp
+*~
+.DS_Store
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+
+# ROS / Gazebo
+*.bag
+*.bag.active
