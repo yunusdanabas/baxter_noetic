@@ -26,12 +26,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 import inspect
-from weakref import WeakKeyDictionary
-
-try:
-    from weakref import WeakSet
-except ImportError:
-    from weakrefset import WeakSet
+from weakref import WeakKeyDictionary, WeakSet
 
 
 class Signal(object):

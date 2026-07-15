@@ -1,0 +1,55 @@
+x-ros-env: &ros-env
+  ROS_MASTER_URI: http://127.0.0.1:11311
+  ROS_IP: 127.0.0.1
+
+x-gui-env: &gui-env
+  DISPLAY: ${DISPLAY:-:0}
+  WAYLAND_DISPLAY: ${WAYLAND_DISPLAY:-wayland-0}
+  XDG_RUNTIME_DIR: ${XDG_RUNTIME_DIR:-/tmp}
+  QT_X11_NO_MITSHM: "1"
+  NVIDIA_DRIVER_CAPABILITIES: all
+
+x-baxter: &baxter
+  image: baxter-noetic:n07
+  build:
+    context: .
+    dockerfile: baxter_simulator/Dockerfile
+  init: true
+  network_mode: host
+
+services:
+  roscore:
+    <<: *baxter
+    environment:
+      <<: *ros-env
+    command: ["bash", "-lc", "source /root/baxter_ws/install/setup.bash && roscore"]
+
+  baxter_sim:
+    <<: *baxter
+    depends_on: [roscore]
+    environment:
+      <<: [*ros-env, *gui-env]
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+      - /mnt/wslg:/mnt/wslg:rw
+    gpus: all
+    command: ["bash", "-lc", "source /root/baxter_ws/install/setup.bash && roslaunch baxter_gazebo baxter_world.launch"]
+
+  moveit:
+    <<: *baxter
+    depends_on: [roscore, baxter_sim]
+    environment:
+      <<: *ros-env
+    # ponytail: fixed 5s wait for planning_context params; poll rosparam instead if it ever flakes
+    command: ["bash", "-lc", "source /root/baxter_ws/install/setup.bash; roslaunch baxter_moveit_config planning_context.launch load_robot_description:=true & sleep 5; exec roslaunch baxter_moveit_config move_group.launch"]
+
+  rviz:
+    <<: *baxter
+    depends_on: [roscore, moveit]
+    environment:
+      <<: [*ros-env, *gui-env]
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+      - /mnt/wslg:/mnt/wslg:rw
+    gpus: all
+    command: ["bash", "-lc", "source /root/baxter_ws/install/setup.bash && roslaunch baxter_moveit_config moveit_rviz.launch config:=true"]

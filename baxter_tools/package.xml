@@ -38,4 +38,7 @@
   <run_depend>baxter_core_msgs</run_depend>
   <run_depend>baxter_maintenance_msgs</run_depend>
 
+  <test_depend>python3-nose</test_depend>
+  <test_depend>xacro</test_depend>
+
 </package>

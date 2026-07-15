@@ -32,16 +32,14 @@ import sys
 import argparse
 
 import rospy
-import xacro_jade
+import xacro
 
 from baxter_core_msgs.msg import (
     URDFConfiguration,
 )
 
 def xacro_parse(filename):
-    doc = xacro_jade.parse(None, filename)
-    xacro_jade.process_doc(doc, in_order=True)
-    return doc.toprettyxml(indent='  ')
+    return xacro.process_file(filename).toprettyxml(indent='  ')
 
 def send_urdf(parent_link, root_joint, urdf_filename):
     """

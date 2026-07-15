@@ -36,9 +36,8 @@
 #define ARM_KINEMATICS_H_
 #include <cstring>
 #include <ros/ros.h>
-#include <tf/transform_listener.h>
-#include <tf_conversions/tf_kdl.h>
-#include <tf/transform_datatypes.h>
+#include <tf2_ros/buffer.h>
+#include <tf2_ros/transform_listener.h>
 #include <kdl_parser/kdl_parser.hpp>
 #include <kdl/jntarray.hpp>
 #include <kdl/chainiksolverpos_nr_jl.hpp>
@@ -53,6 +52,7 @@
 #include <gazebo_msgs/SetLinkProperties.h>
 #include <gazebo_msgs/GetLinkProperties.h>
 #include <algorithm>
+#include <memory>
 
 namespace arm_kinematics
 {
@@ -112,17 +112,18 @@ private:
   std::string root_name, tip_name, grav_left_name, grav_right_name;
   KDL::JntArray joint_min, joint_max;
   KDL::Chain chain, grav_chain_l, grav_chain_r;
-  unsigned int num_joints;
+  unsigned int num_joints, num_joints_l, num_joints_r;
 
-  KDL::ChainFkSolverPos_recursive* fk_solver;
-  KDL::ChainIkSolverPos_NR_JL* ik_solver_pos;
-  KDL::ChainIkSolverVel_pinv* ik_solver_vel;
-  KDL::ChainIdSolver_RNE *gravity_solver_l, *gravity_solver_r;
+  std::unique_ptr<KDL::ChainFkSolverPos_recursive> fk_solver;
+  std::unique_ptr<KDL::ChainIkSolverPos_NR_JL> ik_solver_pos;
+  std::unique_ptr<KDL::ChainIkSolverVel_pinv> ik_solver_vel;
+  std::unique_ptr<KDL::ChainIdSolver_RNE> gravity_solver_l, gravity_solver_r;
 
   ros::ServiceServer ik_service, ik_solver_info_service;
   ros::ServiceServer fk_service, fk_solver_info_service;
 
-  tf::TransformListener tf_listener;
+  tf2_ros::Buffer tf_buffer;
+  tf2_ros::TransformListener tf_listener;
   std::vector<int> indd;
   std::vector<std::string> left_joint, right_joint;
   KinematicSolverInfo info, grav_info_l, grav_info_r;

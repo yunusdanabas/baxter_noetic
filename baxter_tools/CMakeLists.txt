@@ -26,6 +26,10 @@ catkin_package(
   baxter_maintenance_msgs
 )
 
+if(CATKIN_ENABLE_TESTING)
+  catkin_add_nosetests(${CMAKE_CURRENT_SOURCE_DIR}/../test/test_smoke.py)
+endif()
+
 install(
   DIRECTORY scripts/
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}

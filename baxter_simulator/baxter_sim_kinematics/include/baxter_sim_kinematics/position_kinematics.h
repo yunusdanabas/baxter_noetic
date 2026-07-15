@@ -117,7 +117,7 @@ private:
    * Method to pass the desired configuration of the joints and calculate the FK
    * @return calculated FK pose
    */
-  geometry_msgs::PoseStamped FKCalc(const sensor_msgs::JointState req);
+  bool FKCalc(const sensor_msgs::JointState req, geometry_msgs::PoseStamped& res);
 
   /**
    * Callback function for the IK service that responds with the appropriate joint configuration or error message if not
@@ -135,7 +135,7 @@ private:
   /**
    * Method to Filter the names and positions of the initialized side from the remaining
    */
-  void FilterJointState(const sensor_msgs::JointState* msg, sensor_msgs::JointState& res);
+  bool FilterJointState(const sensor_msgs::JointState* msg, sensor_msgs::JointState& res);
 
   bool is_enabled;
   std::string m_limbName;

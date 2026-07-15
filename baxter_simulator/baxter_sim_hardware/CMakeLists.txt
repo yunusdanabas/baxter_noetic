@@ -9,7 +9,6 @@ find_package(catkin
   cv_bridge
   image_transport
   baxter_sim_kinematics
-  tf
 )
 
 find_package(Boost REQUIRED COMPONENTS system)

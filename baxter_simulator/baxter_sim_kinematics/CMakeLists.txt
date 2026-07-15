@@ -6,8 +6,9 @@ find_package(catkin
   roscpp
   baxter_core_msgs
   sensor_msgs
-  tf
-  tf_conversions
+  tf2_geometry_msgs
+  tf2_kdl
+  tf2_ros
   kdl_parser
   gazebo_msgs
 )
@@ -20,6 +21,9 @@ catkin_package(
   gazebo_msgs
   sensor_msgs
   kdl_parser
+  tf2_geometry_msgs
+  tf2_kdl
+  tf2_ros
   LIBRARIES ${PROJECT_NAME}
 )
 
@@ -35,6 +39,14 @@ target_link_libraries(kinematics ${catkin_LIBRARIES} ${PROJECT_NAME})
 
 add_dependencies(${PROJECT_NAME} ${catkin_EXPORTED_TARGETS})
 add_dependencies(kinematics ${catkin_EXPORTED_TARGETS})
+
+if(CATKIN_ENABLE_TESTING)
+  catkin_add_gtest(test_kinematics test/test_kinematics.cpp)
+  if(TARGET test_kinematics)
+    target_link_libraries(test_kinematics ${catkin_LIBRARIES} ${PROJECT_NAME})
+    add_dependencies(test_kinematics ${catkin_EXPORTED_TARGETS})
+  endif()
+endif()
 
 install(
   TARGETS ${PROJECT_NAME}

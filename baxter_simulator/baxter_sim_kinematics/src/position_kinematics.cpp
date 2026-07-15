@@ -90,7 +90,7 @@ bool position_kinematics::init(std::string side)
   {
     if (!handle.getParam("left_tip_name", tip_name))
     {
-      ROS_FATAL_NAMED("position_kin", "GenericIK: No tip name for Right arm found on parameter server");
+      ROS_FATAL_NAMED("position_kin", "GenericIK: No tip name for Left arm found on parameter server");
       return false;
     }
     if (!handle.getParam("robot_config/left_config/joint_names", joint_names))
@@ -101,6 +101,11 @@ bool position_kinematics::init(std::string side)
   }
   no_jts = joint_names.size();
   m_kinematicsModel = arm_kinematics::Kinematics::create(tip_name, no_jts);
+  if (!m_kinematicsModel)
+  {
+    ROS_FATAL_NAMED("position_kin", "Could not initialize kinematics model for %s arm", side.c_str());
+    return false;
+  }
   return true;
 }
 
@@ -123,11 +128,14 @@ void position_kinematics::FKCallback(const sensor_msgs::JointState msg)
 {
   baxter_core_msgs::EndpointState endpoint;
 
-  sensor_msgs::JointState configuration;
-
-  position_kinematics::FilterJointState(&msg, joint);
+  if (!position_kinematics::FilterJointState(&msg, joint))
+    return;
   // Copy the current Joint positions and names of the appropriate side to the configuration
-  endpoint.pose = position_kinematics::FKCalc(joint).pose;
+  geometry_msgs::PoseStamped fk_result;
+  if (!position_kinematics::FKCalc(joint, fk_result))
+    return;
+  endpoint.header = fk_result.header;
+  endpoint.pose = fk_result.pose;
 
   // Fill out timestamp for endpoint
   endpoint.header.stamp = msg.header.stamp;
@@ -139,34 +147,44 @@ void position_kinematics::FKCallback(const sensor_msgs::JointState msg)
 /**
  * Method to Filter the names and positions of the initialized side from the remaining
  */
-void position_kinematics::FilterJointState(const sensor_msgs::JointState* msg, sensor_msgs::JointState& res)
+bool position_kinematics::FilterJointState(const sensor_msgs::JointState* msg, sensor_msgs::JointState& res)
 {
-  // Resize the result to hold the names and positions of the 7 joints
-  res.name.resize(joint_names.size());
-  res.position.resize(joint_names.size());
-  int i = 0;
-  for (size_t ind = 0; ind < msg->name.size(); ind++)
+  if (msg->name.size() != msg->position.size())
   {
-    // Retain the names and positions of the joints of the initialized arm
-    if (std::find(joint_names.begin(), joint_names.end(), msg->name[ind]) != joint_names.end())
-    {
-      res.name[i] = msg->name[ind];
-      res.position[i] = msg->position[ind];
-      i++;
-    }
+    ROS_ERROR_NAMED("position_kin", "Joint state names and positions differ in size");
+    return false;
   }
+  res.name.clear();
+  res.position.clear();
+  res.name.reserve(joint_names.size());
+  res.position.reserve(joint_names.size());
+  for (size_t i = 0; i < joint_names.size(); i++)
+  {
+    std::vector<std::string>::const_iterator found = std::find(msg->name.begin(), msg->name.end(), joint_names[i]);
+    if (found == msg->name.end())
+    {
+      ROS_ERROR_NAMED("position_kin", "Joint state missing joint: %s", joint_names[i].c_str());
+      return false;
+    }
+    size_t ind = found - msg->name.begin();
+    res.name.push_back(joint_names[i]);
+    res.position.push_back(msg->position[ind]);
+  }
+  return true;
 }
 
 /**
  * Method to pass the desired configuration of the joints and calculate the FK
  * @return calculated FK
  */
-geometry_msgs::PoseStamped position_kinematics::FKCalc(const sensor_msgs::JointState configuration)
+bool position_kinematics::FKCalc(const sensor_msgs::JointState configuration, geometry_msgs::PoseStamped& fk_result)
 {
-  bool isV;
-  geometry_msgs::PoseStamped fk_result;
-  isV = m_kinematicsModel->getPositionFK(ref_frame_id, configuration, fk_result);
-  return fk_result;
+  if (!m_kinematicsModel->getPositionFK(ref_frame_id, configuration, fk_result))
+  {
+    ROS_ERROR_NAMED("position_kin", "Could not compute FK for %s arm", m_limbName.c_str());
+    return false;
+  }
+  return true;
 }
 
 /**
@@ -176,7 +194,6 @@ geometry_msgs::PoseStamped position_kinematics::FKCalc(const sensor_msgs::JointS
 bool position_kinematics::IKCallback(baxter_core_msgs::SolvePositionIK::Request& req,
                                      baxter_core_msgs::SolvePositionIK::Response& res)
 {
-  ros::Rate loop_rate(100);
   sensor_msgs::JointState joint_pose;
   res.joints.resize(req.pose_stamp.size());
   res.isValid.resize(req.pose_stamp.size());
@@ -186,7 +203,8 @@ bool position_kinematics::IKCallback(baxter_core_msgs::SolvePositionIK::Request&
     res.isValid[req_index] = 0;
     int valid_inp = 0;
 
-    if (!req.seed_angles.empty() && req.seed_mode != baxter_core_msgs::SolvePositionIKRequest::SEED_CURRENT)
+    if (req_index < req.seed_angles.size() &&
+        req.seed_mode != baxter_core_msgs::SolvePositionIKRequest::SEED_CURRENT)
     {
       res.isValid[req_index] =
           m_kinematicsModel->getPositionIK(req.pose_stamp[req_index], req.seed_angles[req_index], &joint_pose);
@@ -218,7 +236,6 @@ bool position_kinematics::IKCallback(baxter_core_msgs::SolvePositionIK::Request&
     else
       res.result_type[req_index] = baxter_core_msgs::SolvePositionIKResponse::RESULT_INVALID;
   }
-  loop_rate.sleep();
   return true;
 }
 

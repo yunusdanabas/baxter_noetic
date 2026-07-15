@@ -1,48 +1,43 @@
-# RethinkRobotics/baxter-simulator:kinetic
-# Run simulated Baxter in Gazebo
+FROM ros:noetic-ros-base-focal
 
-FROM osrf/ros:kinetic-desktop-full
-MAINTAINER Dave Coleman dave@dav.ee
+ENV DEBIAN_FRONTEND=noninteractive \
+    CATKIN_WS=/root/baxter_ws \
+    ROS_PYTHON_VERSION=3 \
+    PYTHONIOENCODING=UTF-8
 
-ENV TERM xterm
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
-# Setup catkin workspace
-ENV CATKIN_WS=/root/ws_baxter
-RUN mkdir -p $CATKIN_WS/src
-WORKDIR $CATKIN_WS/src
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    cmake \
+    python3-catkin-tools \
+    python3-nose \
+    python3-numpy \
+    python3-rosdep \
+    python3-rospkg \
+    qtbase5-dev \
+    ros-noetic-gazebo-plugins \
+    ros-noetic-gazebo-ros \
+    ros-noetic-gazebo-ros-control \
+    ros-noetic-joint-state-controller \
+    ros-noetic-joint-state-publisher \
+    ros-noetic-robot-state-publisher \
+    ros-noetic-xacro \
+    && rm -rf /var/lib/apt/lists/*
 
-# Download source code
-RUN wstool init . && \
-    wstool merge https://raw.githubusercontent.com/RethinkRobotics/baxter_simulator/kinetic-devel/baxter_simulator.rosinstall && \
-    wstool update
+RUN rosdep init || true && rosdep update --include-eol-distros
 
-# Update apt-get because previous images clear this cache
-# Commands are combined in single RUN statement with "apt/lists" folder removal to reduce image size
-RUN apt-get -qq update && \
-    # Install some base dependencies
-    apt-get -qq install -y \
-        # Some source builds require a package.xml be downloaded via wget from an external location
-        wget \
-        # Required for rosdep command
-        sudo \
-        # Required for installing dependencies
-        python-rosdep \
-        # Preferred build tool
-        python-catkin-tools && \
-    # Download all dependencies
-    rosdep update && \
-    rosdep install -y --from-paths . --ignore-src --rosdistro ${ROS_DISTRO} --as-root=apt:false && \
-    # Clear apt-cache to reduce image size
+WORKDIR ${CATKIN_WS}
+COPY . src/baxter_noetic
+
+RUN apt-get update && \
+    rosdep install --from-paths src --ignore-src --rosdistro noetic -r -y && \
     rm -rf /var/lib/apt/lists/*
 
-# Replacing shell with bash for later docker build commands
-RUN mv /bin/sh /bin/sh-old && \
-    ln -s /bin/bash /bin/sh
+RUN source /opt/ros/noetic/setup.bash && \
+    catkin config --extend /opt/ros/noetic --install --cmake-args -DCMAKE_BUILD_TYPE=Release && \
+    catkin build --jobs 1 --limit-status-rate 0.2 --no-notify
 
-# Build repo
-WORKDIR $CATKIN_WS
-ENV PYTHONIOENCODING UTF-8
-RUN catkin config --extend /opt/ros/${ROS_DISTRO} --cmake-args -DCMAKE_BUILD_TYPE=Release && \
-    # Status rate is limited so that just enough info is shown to keep Docker from timing out, but not too much
-    # such that the Docker log gets too long (another form of timeout)
-    catkin build --jobs 1 --limit-status-rate 0.001 --no-notify
+RUN echo "source ${CATKIN_WS}/install/setup.bash" >> /root/.bashrc
+
+CMD ["bash"]

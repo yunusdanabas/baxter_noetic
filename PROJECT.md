@@ -6,4 +6,4 @@ Group project on **Bayesian Optimization with transfer learning** for sequential
 
 **Tech stack:** ROS Noetic, Catkin, Baxter SDK (interface, tools, examples, MoveIt, Gazebo).
 
-See [README.md](README.md) for `run_baxter` and `rosrun` command reference.
+See [README.md](README.md) for the current Noetic quick start, Docker workflow, simulator basics, MoveIt basics, tests, and troubleshooting.
