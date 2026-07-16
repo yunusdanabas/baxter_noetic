@@ -99,7 +99,12 @@ bool BaxterVelocityController::init(hardware_interface::EffortJointInterface* ro
                                                                << "', Namespace: " << joint_nh.getNamespace());
 
       velocity_controllers_[i].reset(new effort_controllers::JointVelocityController());
-      velocity_controllers_[i]->init(robot, joint_nh);
+      if (!velocity_controllers_[i]->init(robot, joint_nh))
+      {
+        ROS_ERROR_NAMED("velocity", "Failed to initialize sub-controller '%s' (namespace '%s')",
+                        joint_controller_name.c_str(), joint_nh.getNamespace().c_str());
+        return false;
+      }
 
       // DEBUG
       // velocity_controllers_[i]->printDebug();

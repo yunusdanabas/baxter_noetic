@@ -116,7 +116,7 @@ class JointTrajectoryActionServer(object):
             '/robot/joint_state_publish_rate',
              UInt16,
              queue_size=10)
-        self._pub_rate.publish(self._control_rate)
+        self._pub_rate.publish(int(self._control_rate))
 
         self._pub_ff_cmd = rospy.Publisher(
             self._ns + '/inverse_dynamics_command',
@@ -155,7 +155,7 @@ class JointTrajectoryActionServer(object):
                     (self._action_name, jnt,))
                 self._result.error_code = self._result.INVALID_JOINTS
                 self._server.set_aborted(self._result)
-                return
+                return False
             # Path execution tolerance
             path_error = self._dyn.config[jnt + '_trajectory']
             if goal.path_tolerance:
@@ -185,6 +185,7 @@ class JointTrajectoryActionServer(object):
                 self._pid[jnt].set_ki(self._dyn.config[jnt + '_ki'])
                 self._pid[jnt].set_kd(self._dyn.config[jnt + '_kd'])
                 self._pid[jnt].initialize()
+        return True
 
     def _get_current_position(self, joint_names):
         return [self._limb.joint_angle(joint) for joint in joint_names]
@@ -411,7 +412,8 @@ class JointTrajectoryActionServer(object):
         joint_names = goal.trajectory.joint_names
         trajectory_points = goal.trajectory.points
         # Load parameters for trajectory
-        self._get_trajectory_parameters(joint_names, goal)
+        if not self._get_trajectory_parameters(joint_names, goal):
+            return
         # Create a new discretized joint trajectory
         num_points = len(trajectory_points)
         if num_points == 0:

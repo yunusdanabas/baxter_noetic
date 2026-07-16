@@ -389,7 +389,7 @@ void baxter_emulator::left_laser_cb(const sensor_msgs::LaserScan& msg)
   left_ir.max_range = msg.range_max;
   left_ir.radiation_type = 1;
   left_ir.field_of_view = 0.0872664600611;
-  if (msg.ranges[0] < msg.range_max && msg.ranges[0] > msg.range_min)
+  if (!msg.ranges.empty() && msg.ranges[0] < msg.range_max && msg.ranges[0] > msg.range_min)
     left_ir.range = msg.ranges[0];
   else
     left_ir.range = 65.5350036621;
@@ -409,7 +409,7 @@ void baxter_emulator::right_laser_cb(const sensor_msgs::LaserScan& msg)
   right_ir.max_range = msg.range_max;
   right_ir.radiation_type = 1;
   right_ir.field_of_view = 0.0872664600611;
-  if (msg.ranges[0] < msg.range_max && msg.ranges[0] > msg.range_min)
+  if (!msg.ranges.empty() && msg.ranges[0] < msg.range_max && msg.ranges[0] > msg.range_min)
     right_ir.range = msg.ranges[0];
   else
     right_ir.range = 65.5350036621;
@@ -426,7 +426,13 @@ void baxter_emulator::nav_light_cb(const baxter_core_msgs::DigitalOutputCommand&
     res = baxter_core_msgs::DigitalIOState::ON;
   else
     res = baxter_core_msgs::DigitalIOState::OFF;
-  switch (nav_light.find(msg.name)->second)
+  std::map<std::string, nav_light_enum>::const_iterator nav_light_it = nav_light.find(msg.name);
+  if (nav_light_it == nav_light.end())
+  {
+    ROS_ERROR_NAMED("emulator", "Not a valid component id");
+    return;
+  }
+  switch (nav_light_it->second)
   {
     case left_inner_light:
       leftIL_nav_light.state = res;
@@ -488,21 +494,29 @@ void baxter_emulator::update_jnt_st(const sensor_msgs::JointState& msg)
   right_gravity.actual_effort.resize(left_gravity.name.size());
   for (int i = 0; i < msg.name.size(); i++)
   {
+    const std::size_t idx = static_cast<std::size_t>(i);
+    const bool has_position = idx < msg.position.size();
+    const bool has_velocity = idx < msg.velocity.size();
+    const bool has_effort = idx < msg.effort.size();
     if (msg.name[i] == "head_pan")
     {
-      if (fabs(float(head_msg.pan) - float(msg.position[i])) > threshold)
+      if (!has_position)
+        continue;
+      if (fabs(float(head_msg.pan) - float(msg.position[idx])) > threshold)
         head_msg.isTurning = true;
       else
         head_msg.isTurning = false;
-      head_msg.pan = msg.position[i];
+      head_msg.pan = msg.position[idx];
     }
     else if (msg.name[i] == "l_gripper_l_finger_joint")
     {
-      left_grip_st.position = (msg.position[i] / 0.020833) * 100;
+      if (has_position)
+        left_grip_st.position = (msg.position[idx] / 0.020833) * 100;
     }
     else if (msg.name[i] == "r_gripper_l_finger_joint")
     {
-      right_grip_st.position = (msg.position[i] / 0.020833) * 100;
+      if (has_position)
+        right_grip_st.position = (msg.position[idx] / 0.020833) * 100;
     }
     else
     {
@@ -510,16 +524,22 @@ void baxter_emulator::update_jnt_st(const sensor_msgs::JointState& msg)
       {
         if (msg.name[i] == left_gravity.name[j])
         {
-          left_gravity.actual_position[j] = msg.position[i];
-          left_gravity.actual_velocity[j] = msg.velocity[i];
-          left_gravity.actual_effort[j] = msg.effort[i];
+          if (has_position)
+            left_gravity.actual_position[j] = msg.position[idx];
+          if (has_velocity)
+            left_gravity.actual_velocity[j] = msg.velocity[idx];
+          if (has_effort)
+            left_gravity.actual_effort[j] = msg.effort[idx];
           break;
         }
         else if (msg.name[i] == right_gravity.name[j])
         {
-          right_gravity.actual_position[j] = msg.position[i];
-          right_gravity.actual_velocity[j] = msg.velocity[i];
-          right_gravity.actual_effort[j] = msg.effort[i];
+          if (has_position)
+            right_gravity.actual_position[j] = msg.position[idx];
+          if (has_velocity)
+            right_gravity.actual_velocity[j] = msg.velocity[idx];
+          if (has_effort)
+            right_gravity.actual_effort[j] = msg.effort[idx];
           break;
         }
       }

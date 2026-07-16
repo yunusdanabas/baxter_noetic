@@ -56,7 +56,7 @@ docker compose up roscore
 docker compose up baxter_sim
 ```
 
-GUI services require working X11/WSLg and Docker GPU/CDI support, or a local override that removes `gpus: all`.
+`baxter_sim` runs Gazebo headless by default. RViz needs a working host display; add a local Compose override for X11/WSLg/GPU mounts when you want GUI rendering.
 
 ## Kinematics Test
 

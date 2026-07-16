@@ -60,7 +60,7 @@ def list_cameras(*_args, **_kwds):
                     if topic[0] == cam_topics[cam]:
                         open_cams[cam] = True
         except socket.error:
-            raise ROSTopicIOException("Cannot communicate with master.")
+            raise rospy.ROSException("Cannot communicate with master.")
         for cam in resp.cameras:
             print("%s%s" % (cam, ("  -  (open)" if open_cams[cam] else "")))
     else:

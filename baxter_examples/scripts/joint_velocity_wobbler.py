@@ -66,11 +66,11 @@ class Wobbler(object):
         self._rs.enable()
 
         # set joint state publishing to 500Hz
-        self._pub_rate.publish(self._rate)
+        self._pub_rate.publish(int(self._rate))
 
     def _reset_control_modes(self):
         rate = rospy.Rate(self._rate)
-        for _ in xrange(100):
+        for _ in range(100):
             if rospy.is_shutdown():
                 return False
             self._left_arm.exit_control_mode()
@@ -126,7 +126,7 @@ class Wobbler(object):
 
         print("Wobbling. Press Ctrl-C to stop...")
         while not rospy.is_shutdown():
-            self._pub_rate.publish(self._rate)
+            self._pub_rate.publish(int(self._rate))
             elapsed = rospy.Time.now() - start
             cmd = make_cmd(self._left_joint_names, elapsed)
             self._left_arm.set_joint_velocities(cmd)

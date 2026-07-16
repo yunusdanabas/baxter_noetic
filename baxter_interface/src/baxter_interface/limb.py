@@ -345,8 +345,8 @@ class Limb(object):
         @type raw: bool
         @param raw: advanced, direct position control mode
         """
-        self._command_msg.names = positions.keys()
-        self._command_msg.command = positions.values()
+        self._command_msg.names = list(positions.keys())
+        self._command_msg.command = list(positions.values())
         if raw:
             self._command_msg.mode = JointCommand.RAW_POSITION_MODE
         else:
@@ -365,8 +365,8 @@ class Limb(object):
         @type velocities: dict({str:float})
         @param velocities: joint_name:velocity command
         """
-        self._command_msg.names = velocities.keys()
-        self._command_msg.command = velocities.values()
+        self._command_msg.names = list(velocities.keys())
+        self._command_msg.command = list(velocities.values())
         self._command_msg.mode = JointCommand.VELOCITY_MODE
         self._pub_joint_cmd.publish(self._command_msg)
 
@@ -382,8 +382,8 @@ class Limb(object):
         @type torques: dict({str:float})
         @param torques: joint_name:torque command
         """
-        self._command_msg.names = torques.keys()
-        self._command_msg.command = torques.values()
+        self._command_msg.names = list(torques.keys())
+        self._command_msg.command = list(torques.values())
         self._command_msg.mode = JointCommand.TORQUE_MODE
         self._pub_joint_cmd.publish(self._command_msg)
 

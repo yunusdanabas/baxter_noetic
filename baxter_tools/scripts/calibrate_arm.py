@@ -102,7 +102,7 @@ def main():
     try:
         cat.run()
     except Exception as e:
-        error = e.strerror
+        error = str(e)
     finally:
         try:
             rs.disable()

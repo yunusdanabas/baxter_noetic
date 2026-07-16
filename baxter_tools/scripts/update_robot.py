@@ -166,7 +166,7 @@ def run_update(updater, uuid):
         updater.command_update(uuid)
     except OSError as e:
         if e.errno == errno.EINVAL:
-            print(e.strerror)
+            print(str(e))
             return 1
         raise
 
@@ -178,7 +178,7 @@ def run_update(updater, uuid):
         )
     except Exception as e:
         if not (hasattr(e, 'errno') and e.errno == errno.ESHUTDOWN):
-            print(e.strerror)
+            print(str(e))
         nl.rc = 1
 
     return nl.rc
@@ -191,10 +191,12 @@ def ros_updateable_version():
     and return False
     """
     ros_updateable = True
+    param_name = "rethink/software_version"
 
     def get_robot_version():
-        param_name = "rethink/software_version"
         robot_version = rospy.get_param(param_name, None)
+        if robot_version is None:
+            return None
         # parse out first 3 digits of robot version tag
         pattern = ("^([0-9]+)\.([0-9]+)\.([0-9]+)")
         match = re.search(pattern, robot_version)

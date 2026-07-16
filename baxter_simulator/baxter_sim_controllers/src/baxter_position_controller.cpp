@@ -99,7 +99,12 @@ bool BaxterPositionController::init(hardware_interface::EffortJointInterface* ro
                                                                << "', Namespace: " << joint_nh.getNamespace());
 
       position_controllers_[i].reset(new effort_controllers::JointPositionController());
-      position_controllers_[i]->init(robot, joint_nh);
+      if (!position_controllers_[i]->init(robot, joint_nh))
+      {
+        ROS_ERROR_NAMED("position", "Failed to initialize sub-controller '%s' (namespace '%s')",
+                        joint_controller_name.c_str(), joint_nh.getNamespace().c_str());
+        return false;
+      }
 
       // DEBUG
       // position_controllers_[i]->printDebug();

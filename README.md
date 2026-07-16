@@ -67,7 +67,7 @@ The Dockerfile is the source of truth for the minimal apt dependency set used by
 
 ## Docker Compose
 
-Compose builds the same local image and defines four services: `roscore`, `baxter_sim`, `moveit`, and `rviz`.
+Compose builds the same local image and defines four services: `roscore`, `baxter_sim`, `moveit`, and `rviz`. `baxter_sim` runs Gazebo headless by default so the stack can start without host display mounts.
 
 ```bash
 cd ~/baxter_noetic_ws/src/baxter_noetic
@@ -90,7 +90,7 @@ docker compose config
 docker compose run --rm --no-deps roscore bash -lc 'source /root/baxter_ws/install/setup.bash && roslaunch --nodes baxter_gazebo baxter_world.launch'
 ```
 
-Gazebo and RViz services request `gpus: all` and mount X11/WSLg sockets. If the host Docker runtime reports `failed to discover GPU vendor from CDI`, either fix host GPU/CDI support or temporarily remove/override `gpus: all` for software-rendered GUI testing.
+RViz still needs a working host display. Add a local Compose override for X11/WSLg/GPU mounts when you want interactive GUI rendering.
 
 ## Simulator Basics
 
@@ -192,7 +192,7 @@ Do not run motion examples until networking, e-stop state, and workspace safety 
 | `Child elements of a <xacro:include> tag are ignored` | Known Baxter xacro warning; verified launch-parse checks still pass. |
 | Python `DeprecationWarning` for invalid escape sequences | Existing warning noise in some scripts; smoke tests pass. |
 | Kinematics gtest hangs or reports ROS master connection errors | Start `roscore` before running `test_kinematics`. |
-| Docker Compose GPU/CDI error | Host Docker GPU discovery is not configured. Fix GPU/CDI or override `gpus: all`. |
+| Docker Compose RViz display error | Host display forwarding is not configured. Add a local X11/WSLg/GPU override or run only `roscore`, `baxter_sim`, and `moveit` for headless validation. |
 | Kinect/Xtion/warehouse/CHOMP/STOMP launch paths | Not part of the verified CI quick path. Prefer `planning_context`, `move_group`, `moveit_rviz`, or `demo_dummy`. |
 
 ## More Docs

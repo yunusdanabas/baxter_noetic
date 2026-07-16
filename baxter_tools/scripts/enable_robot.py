@@ -77,7 +77,7 @@ def main():
             elif act == 'stop':
                 rs.stop()
     except Exception as e:
-        rospy.logerr(e.strerror)
+        rospy.logerr(str(e))
 
     return 0
 

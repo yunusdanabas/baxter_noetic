@@ -84,10 +84,9 @@ bool BaxterEffortController::init(hardware_interface::EffortJointInterface* robo
       return false;
     }
 
-    // Get joint names from the parameter server
-    std::string joint_name[n_joints_];
     // Get joint controller name
     std::string joint_controller_name = joint_it->first;
+    std::string joint_name;
 
     // Get the joint-namespace nodehandle
     {
@@ -96,9 +95,14 @@ bool BaxterEffortController::init(hardware_interface::EffortJointInterface* robo
                                                                << "', Namespace: " << joint_nh.getNamespace());
 
       effort_controllers_[i].reset(new effort_controllers::JointEffortController());
-      effort_controllers_[i]->init(robot, joint_nh);
+      if (!effort_controllers_[i]->init(robot, joint_nh))
+      {
+        ROS_ERROR_NAMED("effort", "Failed to initialize sub-controller '%s' (namespace '%s')",
+                        joint_controller_name.c_str(), joint_nh.getNamespace().c_str());
+        return false;
+      }
 
-      if (!joint_nh.getParam("joint", joint_name[i]))
+      if (!joint_nh.getParam("joint", joint_name))
       {
         ROS_ERROR_NAMED("effort", "No 'joints' parameter in controller (namespace '%s')",
                         joint_nh.getNamespace().c_str());
@@ -110,7 +114,7 @@ bool BaxterEffortController::init(hardware_interface::EffortJointInterface* robo
     }  // end of joint-namespaces
 
     // Add joint name to map (allows unordered list to quickly be mapped to the ordered index)
-    joint_to_index_map_.insert(std::pair<std::string, std::size_t>(joint_name[i], i));
+    joint_to_index_map_.insert(std::pair<std::string, std::size_t>(joint_name, i));
     // increment joint i
     ++i;
   }

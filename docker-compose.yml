@@ -6,6 +6,7 @@ x-gui-env: &gui-env
   DISPLAY: ${DISPLAY:-:0}
   WAYLAND_DISPLAY: ${WAYLAND_DISPLAY:-wayland-0}
   XDG_RUNTIME_DIR: ${XDG_RUNTIME_DIR:-/tmp}
+  QT_QPA_PLATFORM: ${QT_QPA_PLATFORM:-offscreen}
   QT_X11_NO_MITSHM: "1"
   NVIDIA_DRIVER_CAPABILITIES: all
 
@@ -29,11 +30,7 @@ services:
     depends_on: [roscore]
     environment:
       <<: [*ros-env, *gui-env]
-    volumes:
-      - /tmp/.X11-unix:/tmp/.X11-unix:rw
-      - /mnt/wslg:/mnt/wslg:rw
-    gpus: all
-    command: ["bash", "-lc", "source /root/baxter_ws/install/setup.bash && roslaunch baxter_gazebo baxter_world.launch"]
+    command: ["bash", "-lc", "source /root/baxter_ws/install/setup.bash && roslaunch --wait baxter_gazebo baxter_world.launch gui:=false headless:=true"]
 
   moveit:
     <<: *baxter
@@ -41,15 +38,11 @@ services:
     environment:
       <<: *ros-env
     # ponytail: fixed 5s wait for planning_context params; poll rosparam instead if it ever flakes
-    command: ["bash", "-lc", "source /root/baxter_ws/install/setup.bash; roslaunch baxter_moveit_config planning_context.launch load_robot_description:=true & sleep 5; exec roslaunch baxter_moveit_config move_group.launch"]
+    command: ["bash", "-lc", "source /root/baxter_ws/install/setup.bash; roslaunch --wait baxter_moveit_config planning_context.launch load_robot_description:=true & sleep 5; exec roslaunch --wait baxter_moveit_config move_group.launch"]
 
   rviz:
     <<: *baxter
     depends_on: [roscore, moveit]
     environment:
       <<: [*ros-env, *gui-env]
-    volumes:
-      - /tmp/.X11-unix:/tmp/.X11-unix:rw
-      - /mnt/wslg:/mnt/wslg:rw
-    gpus: all
-    command: ["bash", "-lc", "source /root/baxter_ws/install/setup.bash && roslaunch baxter_moveit_config moveit_rviz.launch config:=true"]
+    command: ["bash", "-lc", "source /root/baxter_ws/install/setup.bash && roslaunch --wait baxter_moveit_config moveit_rviz.launch config:=true"]

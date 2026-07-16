@@ -79,7 +79,7 @@ class HeadActionServer(object):
         self._server.publish_feedback(self._fdbk)
 
     def _command_head(self, position, speed):
-        self._head.set_pan(position, speed, timeout=self._timeout)
+        self._head.set_pan(position, speed, timeout=0.0)
 
     def _check_state(self, position):
         return (fabs(self._head.pan() - position) <
