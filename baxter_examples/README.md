@@ -45,6 +45,4 @@ rosrun baxter_examples ik_service_client.py -l left
 rosrun baxter_examples gripper_keyboard.py
 ```
 
-The local `baxter_pnpcode.py` and `baxter_pnpcode2.py` scripts are not part of the verified quick-start path. Treat them as project-specific scratch examples unless they are reviewed for your setup.
-
 Do not run motion examples on a physical robot until networking, e-stop state, and workcell safety are confirmed.

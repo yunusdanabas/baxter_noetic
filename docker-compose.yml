@@ -11,7 +11,7 @@ x-gui-env: &gui-env
   NVIDIA_DRIVER_CAPABILITIES: all
 
 x-baxter: &baxter
-  image: baxter-noetic:n07
+  image: baxter-noetic:local
   build:
     context: .
     dockerfile: baxter_simulator/Dockerfile
@@ -37,7 +37,7 @@ services:
     depends_on: [roscore, baxter_sim]
     environment:
       <<: *ros-env
-    # ponytail: fixed 5s wait for planning_context params; poll rosparam instead if it ever flakes
+    # Give planning_context time to load its parameters before move_group starts.
     command: ["bash", "-lc", "source /root/baxter_ws/install/setup.bash; roslaunch --wait baxter_moveit_config planning_context.launch load_robot_description:=true & sleep 5; exec roslaunch --wait baxter_moveit_config move_group.launch"]
 
   rviz:

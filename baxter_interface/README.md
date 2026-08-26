@@ -37,7 +37,7 @@ The repository CI runs the full smoke test and kinematics test in Docker. The sm
 
 ```bash
 cd ~/baxter_noetic_ws/src/baxter_noetic
-docker run --rm baxter-noetic:n07 bash -lc 'source /root/baxter_ws/install/setup.bash && cd /root/baxter_ws/src/baxter_noetic && python3 test/test_smoke.py'
+docker run --rm baxter-noetic:local bash -lc 'source /root/baxter_ws/install/setup.bash && cd /root/baxter_ws/src/baxter_noetic && python3 test/test_smoke.py'
 ```
 
 See the root [README](../README.md) for setup and troubleshooting.

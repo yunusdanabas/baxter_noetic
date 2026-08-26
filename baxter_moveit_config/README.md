@@ -30,7 +30,7 @@ The CI launch-parse check verifies `planning_context.launch`, `move_group.launch
 
 ```bash
 cd ~/baxter_noetic_ws/src/baxter_noetic
-docker run --rm baxter-noetic:n07 bash -lc 'source /root/baxter_ws/install/setup.bash && roslaunch --nodes baxter_moveit_config planning_context.launch load_robot_description:=true && roslaunch --nodes baxter_moveit_config move_group.launch'
+docker run --rm baxter-noetic:local bash -lc 'source /root/baxter_ws/install/setup.bash && roslaunch --nodes baxter_moveit_config planning_context.launch load_robot_description:=true && roslaunch --nodes baxter_moveit_config move_group.launch'
 ```
 
 ## Trajectory Execution

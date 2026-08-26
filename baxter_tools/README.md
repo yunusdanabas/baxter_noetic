@@ -46,7 +46,7 @@ python3 test/test_smoke.py
 Run it in Docker for the verified Noetic environment:
 
 ```bash
-docker run --rm baxter-noetic:n07 bash -lc 'source /root/baxter_ws/install/setup.bash && cd /root/baxter_ws/src/baxter_noetic && python3 test/test_smoke.py'
+docker run --rm baxter-noetic:local bash -lc 'source /root/baxter_ws/install/setup.bash && cd /root/baxter_ws/src/baxter_noetic && python3 test/test_smoke.py'
 ```
 
 See the root [README](../README.md) for setup, Docker, and CI details.

@@ -20,7 +20,7 @@ Build the local Noetic image from the repository root:
 
 ```bash
 cd ~/baxter_noetic_ws/src/baxter_noetic
-docker build -f baxter_simulator/Dockerfile -t baxter-noetic:n07 .
+docker build -f baxter_simulator/Dockerfile -t baxter-noetic:local .
 ```
 
 No pre-built image is published yet.
@@ -42,7 +42,7 @@ roslaunch --nodes baxter_gazebo baxter_world.launch
 In Docker:
 
 ```bash
-docker run --rm baxter-noetic:n07 bash -lc 'source /root/baxter_ws/install/setup.bash && roslaunch --nodes baxter_gazebo baxter_world.launch'
+docker run --rm baxter-noetic:local bash -lc 'source /root/baxter_ws/install/setup.bash && roslaunch --nodes baxter_gazebo baxter_world.launch'
 ```
 
 ## Compose
@@ -61,7 +61,7 @@ docker compose up baxter_sim
 ## Kinematics Test
 
 ```bash
-docker run --rm baxter-noetic:n07 bash -lc 'source /root/baxter_ws/devel/setup.bash; cd /root/baxter_ws/build/baxter_sim_kinematics; make test_kinematics; roscore >/tmp/roscore.log 2>&1 & roscore_pid=$!; trap "kill $roscore_pid || true" EXIT; sleep 5; timeout 120 /root/baxter_ws/devel/.private/baxter_sim_kinematics/lib/baxter_sim_kinematics/test_kinematics'
+docker run --rm baxter-noetic:local bash -lc 'source /root/baxter_ws/devel/setup.bash; cd /root/baxter_ws/build/baxter_sim_kinematics; make test_kinematics; roscore >/tmp/roscore.log 2>&1 & roscore_pid=$!; trap "kill $roscore_pid || true" EXIT; sleep 5; timeout 120 /root/baxter_ws/devel/.private/baxter_sim_kinematics/lib/baxter_sim_kinematics/test_kinematics'
 ```
 
 `test_kinematics` needs a ROS master because the kinematics class owns a tf2 listener.
